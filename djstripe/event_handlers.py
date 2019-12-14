@@ -34,7 +34,15 @@ def customer_webhook_handler(event):
     Docs and an example customer webhook response:
     https://stripe.com/docs/api#customer_object
     """
-    if event.customer:
+    # DOTHINGS: Workaround for event of already deleted users
+    # The event.customers tries to create the deleted customer locally which
+    # fails if the django user already points to the same stripe customer.
+    # Basically a no duplicate key constraint
+    try:
+        customer = event.customer
+    except models.Customer.DoesNotExist:
+        return
+    if customer:
         # As customers are tied to local users, djstripe will not create
         # customers that do not already exist locally.
         _handle_crud_like_event(
