@@ -24,5 +24,6 @@ app_name = "djstripe_rest_framework"
 
 urlpatterns = [
     # REST api
-    path("subscription/", views.SubscriptionRestView.as_view(), name="subscription")
+    path("subscription/", views.SubscriptionRestView.as_view(), name="subscription"),
+    path("subscription/reativate/", views.SubscriptionReactivateRestView.as_view(), name="subscription_reactivate"),
 ]

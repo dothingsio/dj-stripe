@@ -53,8 +53,9 @@ class RestSubscriptionTest(APITestCase):
         add_card_mock.assert_called_once_with(customer, "cake")
         subscribe_mock.assert_called_once_with(customer, "test0", True)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data["charge_immediately"] = None
-        self.assertEqual(response.data, data)
+
+        expect_data =  {'id': '', 'livemode': None, 'created': None, 'metadata': '', 'description': '', 'application_fee_percent': None, 'billing': None, 'billing_cycle_anchor': None, 'cancel_at_period_end': False, 'canceled_at': None, 'current_period_end': None, 'current_period_start': None, 'days_until_due': None, 'ended_at': None, 'quantity': None, 'start': None, 'status': None, 'tax_percent': None, 'trial_end': None, 'trial_start': None, 'customer': None, 'pending_setup_intent': None, 'plan': None}
+        self.assertEqual(response.data, expect_data)
 
     @patch("djstripe.models.Customer.subscribe", autospec=True)
     @patch("djstripe.models.Customer.add_card", autospec=True)
@@ -72,7 +73,8 @@ class RestSubscriptionTest(APITestCase):
         customer = Customer.objects.get()
         subscribe_mock.assert_called_once_with(customer, "test0", False)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, data)
+        expect_data =  {'id': '', 'livemode': None, 'created': None, 'metadata': '', 'description': '', 'application_fee_percent': None, 'billing': None, 'billing_cycle_anchor': None, 'cancel_at_period_end': False, 'canceled_at': None, 'current_period_end': None, 'current_period_start': None, 'days_until_due': None, 'ended_at': None, 'quantity': None, 'start': None, 'status': None, 'tax_percent': None, 'trial_end': None, 'trial_start': None, 'customer': None, 'pending_setup_intent': None, 'plan': None}
+        self.assertEqual(response.data, expect_data)
 
     @patch("djstripe.models.Customer.subscribe", autospec=True)
     @patch("djstripe.models.Customer.add_card", autospec=True)
@@ -84,7 +86,7 @@ class RestSubscriptionTest(APITestCase):
         subscribe_mock.side_effect = Exception
         data = {"plan": "test0", "stripe_token": "cake"}
         response = self.client.post(self.url, data)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def test_create_subscription_incorrect_data(self):
         """Test a POST to the SubscriptionRestView.
@@ -166,7 +168,7 @@ class RestSubscriptionTest(APITestCase):
         Should return a 400 when an exception is raised.
         """
         response = self.client.delete(self.url)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class RestSubscriptionNotLoggedInTest(APITestCase):

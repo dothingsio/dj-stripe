@@ -1702,6 +1702,13 @@ class SubscriptionItem(StripeModel):
         "subscription_item.",
     )
 
+    def create_usage_report(self, quantity=1, action='increment'):
+        return stripe.UsageRecord.create(api_key=djstripe_settings.STRIPE_SECRET_KEY,
+                                quantity=quantity,
+                                timestamp=timezone.now(),
+                                action=action,
+                                subscription_item=self.id)
+
     def _attach_objects_post_save_hook(self, cls, data, pending_relations=None):
         super()._attach_objects_post_save_hook(
             cls, data, pending_relations=pending_relations
