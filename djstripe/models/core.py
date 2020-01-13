@@ -298,8 +298,8 @@ class Charge(StripeModel):
         )
         if destination_account:
             self.account = destination_account
-        else:
-            self.account = Account.get_default_account()
+        # else:
+        #     self.account = Account.get_default_account()
 
         # Source doesn't always appear to be present, so handle the case
         # where it is missing.
